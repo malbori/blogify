@@ -128,6 +128,7 @@ class BlogHandler(webapp2.RequestHandler):
             return False
         return True
 
+    # Functions to make sure DB items exists. Ex: Post and comment
 
 # --------------------- Home Page Handler --------------------------------------
 class FrontPage(BlogHandler):
@@ -242,7 +243,7 @@ class EditPostPage(BlogHandler):
                 # Check that user created this post
                 uid = self.read_cookie("user", True)
                 post = Post.get_by_id(int(pid))
-                if self.user_post(uid, pid):
+                if self.user_post(uid, pid) and post:
                     # render the edit post page
                     self.render("edit-post.html", post=post)
                 # just going to view the post with comments
@@ -368,6 +369,10 @@ class DeletePostPage(BlogHandler):
             self.set_cookie("user", "", "/", False)
             self.redirect("/")
         else:
+            # Check post exists
+            post = Post.get_by_id(int(pid))
+            if not post:
+                return self.redirect('/login')
             # Check that user created post
             # Must ensure users can only delete their own posts
             uid = self.read_cookie("user", True)
@@ -409,21 +414,24 @@ class CreateCommentPage(BlogHandler):
         else:
             post = Post.get_by_id(int(pid))
             # Check that content is not empty
-            if len(cont) == 0:
-                self.render("edit-comment.html", post=post,
-                            error="Comment can't be blank")
+            if post:
+                if len(cont) == 0:
+                    self.render("edit-comment.html", post=post,
+                                error="Comment can't be blank")
+                else:
+                    uid = self.read_cookie("user", True)
+                    user = User.get_by_id(int(uid))
+                    # set the comment attached with author
+                    comment = Comment(content=cont, author=user.name,
+                                      post_id=int(pid))
+                    comment.put()
+                    # get the comments after comment is put and render post page
+                    comments = db.GqlQuery("SELECT * FROM Comment WHERE post_id = \
+                        {0}".format(pid))
+                    self.render("view-post.html", post=post, user=user,
+                                comments=comments)
             else:
-                uid = self.read_cookie("user", True)
-                user = User.get_by_id(int(uid))
-                # set the comment attatched with author
-                comment = Comment(content=cont, author=user.name,
-                                  post_id=int(pid))
-                comment.put()
-                # get the comments after comment is put and render post page
-                comments = db.GqlQuery("SELECT * FROM Comment WHERE post_id = \
-                    {0}".format(pid))
-                self.render("view-post.html", post=post, user=user,
-                            comments=comments)
+                self.redirect('/login')
 
 
 class EditCommentPage(BlogHandler):
@@ -435,16 +443,20 @@ class EditCommentPage(BlogHandler):
         else:
             post = Post.get_by_id(int(pid))
             comment = Comment.get_by_id(int(cid))
-            # Check that this comment was created by user
-            uid = self.read_cookie("user", True)
-            # if the user is author of comment render edit comment html page
-            if self.user_comment(uid, cid):
-                self.render("edit-comment.html", post=post, comment=comment)
-            else: # otherwise they can only view the comment
-                user = User.get_by_id(int(uid))
-                self.render("view-comment.html", post=post, user=user,
-                            comment=comment,
-                            error="Only the author can edit this.")
+            # make sure comment exists
+            if comment:
+                # Check that this comment was created by user
+                uid = self.read_cookie("user", True)
+                # if the user is author of comment render edit comment html page
+                if self.user_comment(uid, cid):
+                    self.render("edit-comment.html", post=post, comment=comment)
+                else: # otherwise they can only view the comment
+                    user = User.get_by_id(int(uid))
+                    self.render("view-comment.html", post=post, user=user,
+                                comment=comment,
+                                error="Only the author can edit this.")
+            else:
+                self.redirect('/login')
 
     def post(self, pid, cid):
         content = self.request.get("content")
@@ -506,18 +518,22 @@ class DeleteCommentPage(BlogHandler):
         else:
             # Make sure the author is the one doing the deleting
             uid = self.read_cookie("user", True)
-            if self.user_comment(uid, cid):
-                comment = Comment.get_by_id(int(cid))
-                # delete the comment
-                comment.delete()
-                self.redirect("/post/{0}".format(pid))
+            comment = Comment.get_by_id(int(cid))
+            if comment:
+                if self.user_comment(uid, cid):
+                    comment = Comment.get_by_id(int(cid))
+                    # delete the comment
+                    comment.delete()
+                    self.redirect("/post/{0}".format(pid))
+                else:
+                    user = User.get_by_id(int(uid))
+                    post = Post.get_by_id(int(pid))
+                    comment = Comment.get_by_id(int(cid))
+                    self.render("view-comment.html", post=post, user=user,
+                                comment=comment,
+                                error="Only the author can delete this.")
             else:
-                user = User.get_by_id(int(uid))
-                post = Post.get_by_id(int(pid))
-                comment = Comment.get_by_id(int(cid))
-                self.render("view-comment.html", post=post, user=user,
-                            comment=comment,
-                            error="Only the author can delete this.")
+                self.redirect('/login')
 
 app = webapp2.WSGIApplication([
     ("/", FrontPage),
