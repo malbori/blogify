@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blogify</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="/static/main.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">Blogify</a>
+            <a id="hamburger" class="header__menu">&#9776;</a>
+          </div>
+
+          <ul id="drawer" class="nav navbar-nav navbar-right">
+            {% if user %}
+            <li class="nav__item"><a href="/post">New Post</a></li>
+            <li class="nav__item"><a href="/profile">Profile</a></li>
+            <li class="nav__item"><a href="/signout">Sign Out</a></li>
+            {% else %}
+            <li class="nav__item"><a href="/signup">Sign Up</a></li>
+            <li class="nav__item"><a href="/signin">Sign In</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script>
+      var hamburger = document.querySelector('#hamburger');
+      var drawer = document.querySelector('.nav');
+
+      hamburger.addEventListener('click', function(e) {
+        drawer.classList.toggle('open');
+        e.stopPropagation();
+      });
+  </script>
+</body>
+</html>

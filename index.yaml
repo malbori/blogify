@@ -1,0 +1,25 @@
+indexes:
+
+- kind: Comment
+  properties:
+  - name: author
+  - name: created_time
+    direction: desc
+
+- kind: Post
+  properties:
+  - name: author
+  - name: created_time
+    direction: desc
+
+- kind: Post
+  properties:
+  - name: author
+  - name: created_time
+    direction: desc
+  - name: id
+
+- kind: User
+  properties:
+  - name: id
+  - name: liked_posts

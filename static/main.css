@@ -1,0 +1,49 @@
+.header__menu {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+    .header__menu {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    /* Start hidding navigation and turn into hamburger */
+    .nav {
+        width: 300px;
+        position: absolute;
+        -webkit-transform: translate(-320px, 0);
+        transform: translate(-320px, 0);
+        transition: transform 0.3s ease;
+        background-color: #fff;
+
+        /* Important!! This property specifies the stack order of an element.
+        An element with greater stack order is always in front of an element
+        with a lower stack order. Note: z-index only works on positioned elements
+        (position: absolute, position: relative, or fixed).
+
+        In short: this makes the hamburger menu pop out and show above page. */
+    }
+
+    /* Open class to show the menu from hiding */
+    .nav.open {
+        -webkit-transform: translate(0, 0);
+        transform: translate(0,0);
+    }
+
+    /* how the list of items will be displayed */
+    .nav__item {
+      display: list-item;
+      border-bottom: 1px solid #E0E0E0;
+      width: 100%;
+      text-align: left;
+    }
+
+    .header__menu {
+        position: absolute;
+        right: 0;
+        margin-top: 4px;
+        margin-right: .5em;
+        font-size: 2em;
+    }
+}
