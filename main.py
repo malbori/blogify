@@ -13,15 +13,15 @@ template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
 
 # get the config file with the "secret" for hashing
-config_filname = os.path.join(os.path.dirname(__file__), "config.json")
-with open(config_filname) as config_file:
-    config = json.load(config_file)
+# = os.path.join(os.path.dirname(__file__), "config.json")
+#with open(config_filname) as config_file:
+#    config = json.load(config_file)
 
-secret_key = config["secret"]
+secret_key = "shhhhhhhhh"
 
+# --------------------- Blog Handler -------------------------------------------
 
-class Handler(webapp2.RequestHandler):
-    """Handler for web requests"""
+class BlogHandler(webapp2.RequestHandler):
 
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
@@ -127,6 +127,7 @@ class Handler(webapp2.RequestHandler):
             return False
         return True
 
+# --------------------- DB Models ----------------------------------------------
 
 class Post(db.Model):
 
@@ -155,9 +156,8 @@ class User(db.Model):
     def get_by_email(cls, email):
         return User.all().filter("email =", email).get()
 
-
-class FrontPage(Handler):
-    """Handler for the index and home page"""
+# --------------------- Home Page Handler --------------------------------------
+class FrontPage(BlogHandler):
 
     def get(self):
         uid = self.read_cookie("user", True)
@@ -175,8 +175,8 @@ class FrontPage(Handler):
         else:
             self.render("index.html")
 
-
-class SignUpPage(Handler):
+# --------------------- SignUp, LogIn, LogOut Classes --------------------------
+class SignUpPage(BlogHandler):
 
     # get the html template
     def get(self):
@@ -220,7 +220,7 @@ class SignUpPage(Handler):
         self.render("signup.html", error=error)
 
 
-class LogInPage(Handler):
+class LogInPage(BlogHandler):
 
     #get the login html template
     def get(self):
@@ -246,15 +246,16 @@ class LogInPage(Handler):
         self.render("login.html", error=error)
 
 
-class SignOut(Handler):
+class LogOut(BlogHandler):
 
     # clear the cookie
     def get(self):
         self.set_cookie("user", "", "/", False)
         self.redirect("/")
 
+# --------------------- Post Classes -------------------------------------------
 
-class EditPostPage(Handler):
+class EditPostPage(BlogHandler):
     """Handler for the edit post and new post pages"""
 
     def get(self, pid=None):
@@ -332,7 +333,7 @@ class EditPostPage(Handler):
                     self.redirect("/post/{0}".format(pid))
 
 
-class ViewPostPage(Handler):
+class ViewPostPage(BlogHandler):
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -387,7 +388,7 @@ class ViewPostPage(Handler):
                             comments=comments)
 
 
-class DeletePostPage(Handler):
+class DeletePostPage(BlogHandler):
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -414,8 +415,9 @@ class DeletePostPage(Handler):
                             comments=comments,
                             error="You can only delete posts you've made.")
 
+# --------------------- Comment Classes ----------------------------------------
 
-class CreateCommentPage(Handler):
+class CreateCommentPage(BlogHandler):
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -451,7 +453,7 @@ class CreateCommentPage(Handler):
                             comments=comments)
 
 
-class EditCommentPage(Handler):
+class EditCommentPage(BlogHandler):
     def get(self, pid, cid):
         # Check that user is valid
         if not self.valid_user():
@@ -501,7 +503,7 @@ class EditCommentPage(Handler):
                             error="Only the author can edit this.")
 
 # View a comment
-class ViewCommentPage(Handler):
+class ViewCommentPage(BlogHandler):
 
     def get(self, pid, cid):
         # Check that user is valid
@@ -521,7 +523,7 @@ class ViewCommentPage(Handler):
                         comment=comment)
 
 
-class DeleteCommentPage(Handler):
+class DeleteCommentPage(BlogHandler):
 
     def get(self, pid, cid):
         # Check that user is valid
@@ -548,7 +550,7 @@ app = webapp2.WSGIApplication([
     ("/", FrontPage),
     ("/signup", SignUpPage),
     ("/login", LogInPage),
-    ("/signout", SignOut),
+    ("/logout", LogOut),
     ("/post", EditPostPage),
     ("/post/(.*)/comment/(.*)/edit", EditCommentPage),
     ("/post/(.*)/comment/(.*)/delete", DeleteCommentPage),

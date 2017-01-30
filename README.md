@@ -12,15 +12,7 @@ Got something on your mind and want to write about it? Well then signup and get 
 
 2. Add the repository as an application in your Google App Engine Launcher
 
-3. Use the file called `config.json` in your project's directory to make your own secret message:
-
-    ```
-    {
-      "secret": "put_secret_here"
-    }
-    ```
-
-4. To run locally on your machine type the command:
+3. To run locally on your machine type the command:
 
     ```
     dev_appserver.py .
