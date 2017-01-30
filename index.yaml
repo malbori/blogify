@@ -1,11 +1,5 @@
 indexes:
 
-- kind: Comment
-  properties:
-  - name: author
-  - name: created_time
-    direction: desc
-
 - kind: Post
   properties:
   - name: author
@@ -18,6 +12,12 @@ indexes:
   - name: created_time
     direction: desc
   - name: id
+
+- kind: Comment
+  properties:
+  - name: author
+  - name: created_time
+    direction: desc
 
 - kind: User
   properties:

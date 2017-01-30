@@ -3,16 +3,17 @@
 {% if error %}
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
-{% if user.name == comment.author %}
-<div class="text-right">
-  <div class="btn-group">
-    <br>
-    <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}/edit" class="btn btn-primary" role="button">Edit Comment</a>
-    <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}/delete" class="btn btn-danger" role="button">Delete Comment</a>
-  </div>
+<div class="row">
+    <h1 class="text-center col-md-6">{{ comment.author }}</h1>
+    {% if user.name == comment.author %}
+        <div class="col-md-6 text-right" style="margin-top: 20px;">
+          <div class="btn-group">
+            <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}/edit" class="btn btn-primary" role="button">Edit Comment</a>
+            <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}/delete" class="btn btn-danger" role="button">Delete Comment</a>
+          </div>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
-<h1 class="header-text text-center">{{ comment.author }}</h1>
 <div class="jumbotron text-center">
   <p>{{ comment.content }}</p>
 </div>

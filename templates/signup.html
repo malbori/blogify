@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="header-text text-center">Sign Up</h1>
+<h1 class="header-text text-justify">Sign Up</h1>
 {% if error %}
 <div class="alert alert-danger" role="alert">Error during registration: {{ error }}</div>
 {% endif %}
@@ -21,6 +21,6 @@
     <label for="confirm-password">Confirm Password</label>
     <input type="password" class="form-control" id="confirm-password" placeholder="Retype Password" name="confirm-password">
   </div>
-  <button type="submit" class="btn btn-default" formnovalidate>Submit</button>
+  <button type="submit" class="btn btn-success" formnovalidate>Submit</button>
 </form>
 {% endblock %}

@@ -23,6 +23,8 @@
         (position: absolute, position: relative, or fixed).
 
         In short: this makes the hamburger menu pop out and show above page. */
+
+        z-index: 10;
     }
 
     /* Open class to show the menu from hiding */

@@ -1,16 +1,25 @@
 {% extends "base.html" %}
-{% block content%}
+{% block content %}
 {% if error %}
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
+
 <form method="post" enctype="multipart/form-data">
   <div class="form-group">
     <label for="content">Content</label>
-    <textarea class="form-control" name="content" id="content" rows="5">{{ comment.content }}</textarea>
+    {% if comment %}
+        <textarea class="form-control" name="content" id="content" rows="5">{{ comment.content }}</textarea>
+    {% else %}
+        <textarea class="form-control" name="content" id="content" rows="5"></textarea>
+    {% endif %}
   </div>
   <div class="btn-group">
     <button type="submit" class="btn btn-primary">Submit</button>
-    <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}" class="btn btn-danger" role="button">Cancel</a>
+    {% if comment %}
+        <a href="/post/{{ post.key().id() }}/comment/{{ comment.key().id() }}" class="btn btn-danger" role="button">Cancel</a>
+    {% else %}
+       <a href="/post/{{ post.key().id() }}" class="btn btn-danger" role="button">Cancel</a>
+    {% endif %}
   </div>
 </form>
 {% endblock %}

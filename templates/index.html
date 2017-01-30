@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-{% if error %}
-<div class="alert alert-danger" role="alert">{{ error }}</div>
-{% endif %}
-<div class="jumbotron text-center">
-  <p>Welcome to Blogify!</p>
+<div>
+  <div class="row">
+      <div class="col-md-10">
+          <h1 class="header-text text-justify">Blogify</h1>
+          <div class="jumbotron">
+            <p>
+                Got something on your mind and want to write about it? Well then signup
+                and get to it!
+            </p>
+          </div>
+      </div>
+  </div>
+
+  <div class="btn-group">
+      <a href="/login" role="button" class="btn btn-primary btn-lg">Log In</a>
+      <a href="/signup" role="button" class="btn btn-success btn-lg">Sign Up</a>
+  </div>
 </div>
-{% for post in posts %}
-<div class="panel-heading">
-  <h3 class="panel-title"><a href="/post/{{ post.key().id() }}">{{ post.title }}</a></h3>
-</div>
-<div class="panel-body">{{ post.content }}</div>
-{% endfor %}
 {% endblock %}

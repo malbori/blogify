@@ -4,6 +4,8 @@
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
 <form method="post" enctype="multipart/form-data">
+    <!-- Check to see if there is already post title. If not, put a place holder
+        to mimic "new post creation." -->
   <div class="form-group">
     <label for="title">Title</label>
     {% if post %}
@@ -12,6 +14,8 @@
       <input type="text" class="form-control" id="title" placeholder="My Blog Post" name="title">
     {% endif %}
   </div>
+  <!-- Check to see if there is already content. If not, put a place holder
+      to mimic "new post creation." -->
   <div class="form-group">
     <label for="content">Content</label>
     {% if post %}

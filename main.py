@@ -156,8 +156,8 @@ class User(db.Model):
         return User.all().filter("email =", email).get()
 
 
-class MainPage(Handler):
-    """Handler for the landing and front pages"""
+class FrontPage(Handler):
+    """Handler for the index and home page"""
 
     def get(self):
         uid = self.read_cookie("user", True)
@@ -171,9 +171,9 @@ class MainPage(Handler):
                 posts = db.GqlQuery(
                     "SELECT * FROM Post ORDER BY created_time DESC"
                 )
-                self.render("index.html", user=user, posts=posts)
+                self.render("home.html", user=user, posts=posts)
         else:
-            self.render("landing.html")
+            self.render("index.html")
 
 
 class SignUpPage(Handler):
@@ -220,11 +220,11 @@ class SignUpPage(Handler):
         self.render("signup.html", error=error)
 
 
-class SignInPage(Handler):
+class LogInPage(Handler):
 
-    #get the signin html template
+    #get the login html template
     def get(self):
-        self.render("signin.html")
+        self.render("login.html")
 
     # post login info the DB and check to see if a match
     def post(self, error=None):
@@ -243,7 +243,7 @@ class SignInPage(Handler):
             self.redirect("/")
         else:
             error = "Username and password do not match."
-        self.render("signin.html", error=error)
+        self.render("login.html", error=error)
 
 
 class SignOut(Handler):
@@ -252,31 +252,6 @@ class SignOut(Handler):
     def get(self):
         self.set_cookie("user", "", "/", False)
         self.redirect("/")
-
-
-class ProfilePage(Handler):
-
-    def get(self):
-        # Check that user is valid and redirect if not
-        if not self.valid_user():
-            self.set_cookie("user", "", "/", False)
-            self.redirect("/")
-        else:
-            uid = self.read_cookie("user", True)
-            user = User.get_by_id(int(uid))
-            # query DB to get all the posts the author has made
-            posts = db.GqlQuery(
-                "SELECT * FROM Post WHERE author = '{0}' ORDER BY created_time \
-                DESC".format(user.name)
-            )
-            # Query the DB to get all the posts the user has commented on
-            comments = db.GqlQuery(
-                "SELECT * FROM Comment WHERE author = '{0}' ORDER BY created_time \
-                DESC".format(user.name)
-            )
-            # render the profile html template
-            self.render("profile.html", user=user, posts=posts,
-                        comments=comments)
 
 
 class EditPostPage(Handler):
@@ -358,7 +333,6 @@ class EditPostPage(Handler):
 
 
 class ViewPostPage(Handler):
-
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -414,8 +388,6 @@ class ViewPostPage(Handler):
 
 
 class DeletePostPage(Handler):
-    """ Handler for deleting a post from the site """
-
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -444,7 +416,6 @@ class DeletePostPage(Handler):
 
 
 class CreateCommentPage(Handler):
-
     def get(self, pid):
         # Check that user is valid
         if not self.valid_user():
@@ -452,11 +423,10 @@ class CreateCommentPage(Handler):
             self.redirect("/")
         else:
             post = Post.get_by_id(int(pid))
-            self.render("create-comment.html", post=post)
+            self.render("edit-comment.html", post=post)
 
     def post(self, pid):
-        content = self.request.get("content")
-
+        cont = self.request.get("content")
         # Check that user is valid
         if not self.valid_user():
             self.set_cookie("user", "", "/", False)
@@ -464,14 +434,14 @@ class CreateCommentPage(Handler):
         else:
             post = Post.get_by_id(int(pid))
             # Check that content is not empty
-            if len(content) == 0:
-                self.render("create-comment.html", post=post,
+            if len(cont) == 0:
+                self.render("edit-comment.html", post=post,
                             error="Comment can't be blank")
             else:
                 uid = self.read_cookie("user", True)
                 user = User.get_by_id(int(uid))
                 # set the comment attatched with author
-                comment = Comment(content=content, author=user.name,
+                comment = Comment(content=cont, author=user.name,
                                   post_id=int(pid))
                 comment.put()
                 # get the comments after comment is put and render post page
@@ -482,7 +452,6 @@ class CreateCommentPage(Handler):
 
 
 class EditCommentPage(Handler):
-
     def get(self, pid, cid):
         # Check that user is valid
         if not self.valid_user():
@@ -553,7 +522,6 @@ class ViewCommentPage(Handler):
 
 
 class DeleteCommentPage(Handler):
-    """Deleting a comment handler"""
 
     def get(self, pid, cid):
         # Check that user is valid
@@ -577,11 +545,10 @@ class DeleteCommentPage(Handler):
                             error="Only the author can delete this.")
 
 app = webapp2.WSGIApplication([
-    ("/", MainPage),
+    ("/", FrontPage),
     ("/signup", SignUpPage),
-    ("/signin", SignInPage),
+    ("/login", LogInPage),
     ("/signout", SignOut),
-    ("/profile", ProfilePage),
     ("/post", EditPostPage),
     ("/post/(.*)/comment/(.*)/edit", EditCommentPage),
     ("/post/(.*)/comment/(.*)/delete", DeleteCommentPage),
